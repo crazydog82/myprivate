@@ -1,0 +1,27 @@
+apiVersion: apps/v1  # 사용할 API 버전 
+kind: Deployment  # 배포할 오브젝트 종류
+metadata:  # 배포하려는 오브젝트 정보
+  name: hell-world-deploy  # 오브젝트 이름
+spec:  # deployment의 spec 명세
+  replicas: 2  # 복제할 pod 개수 ( deployment는 rs의 상위 객체 ) 
+  selector:  # deployment 에 포함할 pod label Selector
+    matchLabels:  # match할 label 들
+      app: kjh-tomcat  # match 할 pod template의 label
+  minReadySeconds: 10  # pod ready status 대기시간 (초기화 대기)
+  strategy:  # deploy 방식 정의
+    type: RollingUpdate  # rollingUpdate (default)
+    rollingUpdate: 
+      maxUnavailabel: 1  # rollingUpdate중 비 활성화 pod 개수(또는 %)
+      maxSurge: 1  # update중 replicas를 초과해서 만들 수 있는 pod 수
+  template:  # (pod) template – pod의 틀
+    metadata:  # pod template 정보
+      labels:  # pod template label들
+        app: hell-world-deploy
+        version: v1
+        zone: prod
+    spec:  # pod template 스펙
+      containers:  # container들의 정보
+      - name: hell-world  # container 이름
+        image: kimjuhwan82/myprivate:springboot_hellworld  # container를 실행할 image
+        ports: 
+        - containerPort: 8080
